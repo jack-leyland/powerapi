@@ -19,7 +19,7 @@ The documentation is available [here](http://powerapi.org).
 You can follow the latest news and asks questions by subscribing to our <a href="mailto:sympa@inria.fr?subject=subscribe powerapi">mailing list</a>.
 
 ## Contributing
-If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request.
+If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request on the prerealease branch.
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
 
