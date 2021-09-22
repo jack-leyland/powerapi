@@ -40,8 +40,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
-      - name:
-        run: echo ok
       # - name: Install dependencies
       #   run: |
       #     python3 -m venv venv

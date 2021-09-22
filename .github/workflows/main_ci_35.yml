@@ -46,8 +46,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
-      - name:
-        run: echo ok
       - name: Install dependencies
         run: |
           python3 -m venv venv
@@ -58,7 +56,7 @@ jobs:
       - name: Test with pytest
         run: |
           . venv/bin/activate
-          python setup.py test
+          python -m pytest tests
       - name: Lint with flake8
         run: |
           . venv/bin/activate
