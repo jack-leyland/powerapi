@@ -163,11 +163,12 @@ jobs:
           sed -i 's/requests >=2.0//g' setup.cfg
       - name: Create source package
         run: |
-          apt install -y python3-setuptools python3-stdeb python3-numpy 
-          python3 setup.py --command-packages=stdeb.command sdist_dsc
+          tar czvf powerapi.tar.gz powerapi
+          py2dsc powerapi.tar.gz
           sed -i '/Depends: ${misc:Depends}, ${python3:Depends}/a Suggests: python3-libvirt,python3-pymongo,python3-prometheus-client,python3-influxdb' ./deb_dist/powerapi-${{needs.check_release.outputs.version}}/debian/control
       - name: Build binary package and upload it github release page
         run: |
+          apt install -y python3-setuptools python3-stdeb python3-numpy 
           VERSION=${{needs.check_release.outputs.version}}
           PYTHON_VERSION=$(echo ${{ matrix.python-version }} | sed -e 's/\.//g')
           cd ./deb_dist/powerapi-$VERSION
