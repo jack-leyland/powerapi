@@ -26,6 +26,14 @@ jobs:
           sudo apt update
           sudo apt install -y libvirt-dev procps
       - uses: actions/checkout@v2
+      - name: Remove Type hints
+        if: ${{ matrix.python-version == 3.6 }}
+        run: |
+          sed -i 's/python_requires = >= 3\.[0-9]/python_requires = >= 3.6/g' setup.cfg
+          sed -i 's/ *-> *[[:alnum:]]*:/:/g' $(find ./ -name "*.py")
+          sed -i 's/from __future__ import annotations//g' $(find ./ -name "*.py")
+          sed -i 's/: *[[:alnum:]]* *=/=/g' $(find ./ -name "*.py")
+          
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
