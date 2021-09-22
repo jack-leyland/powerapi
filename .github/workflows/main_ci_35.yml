@@ -51,7 +51,7 @@ jobs:
           python3 -m venv venv
           . venv/bin/activate
           python -m pip install --upgrade pip
-          pip install flake8 pylint
+          pip install flake8 pylint pytest pytest-asyncio pytest-timeout
           pip install -e ".[mongodb, influxdb, prometheus, libvirt]"
       - name: Test with pytest
         run: |
