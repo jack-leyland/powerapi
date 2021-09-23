@@ -124,9 +124,6 @@ jobs:
           tags: powerapi/powerapi-pypy:latest, powerapi/powerapi:pypy-${{needs.check_release.outputs.version}}
   build_deb_package:
     name: Build debian binary package and upload them to the github release
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
     runs-on: ubuntu-latest
     needs: check_release
     container:
@@ -159,7 +156,6 @@ jobs:
           sed -i 's/mock >=2.0//g' setup.cfg
           sed -i 's/requests >=2.0//g' setup.cfg
       - name: Convert to python3.6 code
-        if: ${{ matrix.python-version == 3.6 }}
         run: ./to_36.sh
       - name: Create source package
         run: |
@@ -171,20 +167,43 @@ jobs:
           sed -i '/Depends: ${misc:Depends}, ${python3:Depends}/a Suggests: python3-libvirt,python3-pymongo,python3-prometheus-client,python3-influxdb' ./deb_dist/powerapi-${{needs.check_release.outputs.version}}/debian/control
       - name: Build binary package and upload it github release page
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
         run: |
-
-          PYTHON_VERSION=$(echo ${{ matrix.python-version }} | sed -e 's/\.//g')
           cd ./deb_dist/powerapi-$VERSION
           DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage
-          cd ..
-          mv python3-powerapi_$VERSION-1_all.deb python$PYTHON_VERSION-powerapi_$VERSION-1_all.deb
-          gh release upload v$VERSION python$PYTHON_VERSION-powerapi_$VERSION-1_all.deb
-      - name: upload thespian package to github release page
+          cp ../python3-powerapi_$VERSION-1_all.deb ~/
+      - name: Cache debian package
+        env:
+          VERSION: ${{needs.check_release.outputs.version}}
+        uses: actions/cache@v2
+        with:
+          path: ~/python3-powerapi_$VERSION-1_all.deb
+          key: python3-powerapi_$VERSION-1_all.deb
+
+  publish_release:
+    name: Publish the release on github
+    runs-on: ubuntu-latest
+    needs: build_deb_package 
+    container:
+      image: powerapi/powerapi-build-deb
+    steps:
+      - name: Cache debian package
+        env:
+          VERSION: ${{needs.check_release.outputs.version}}
+        uses: actions/cache@v2
+        with:
+          path: ~/python3-powerapi_$VERSION-1_all.deb
+          key: python3-powerapi_$VERSION-1_all.deb
+      - name: Create Changelog
+        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          output: ~/changelog.md
+      - name: Download thespian debian package
+        run: wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
+      - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: |
-          wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
-          gh release upload v$VERSION python3-thespian_3.10.0-1_all.deb
+        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -F ~/changelog.md ~/python3-powerapi_$VERSION-1_all.deb python3-thespian_3.10.0-1_all.deb
+
