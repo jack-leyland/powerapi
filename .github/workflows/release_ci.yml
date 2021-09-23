@@ -126,7 +126,7 @@ jobs:
   #         file: Dockerfile-pypy
   #         tags: powerapi/powerapi-pypy:latest, powerapi/powerapi:pypy-${{needs.check_release.outputs.version}}
   build_deb_package:
-    name: Build debian binary package and upload them to the github release
+    name: Build debian binary package
     runs-on: ubuntu-latest
     needs: check_release
     container:
@@ -174,13 +174,14 @@ jobs:
         run: |
           cd ./deb_dist/powerapi-$VERSION
           DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage
-          cp ../python3-powerapi_$VERSION-1_all.deb ~/
+          mkdir -p ~/deb
+          cp ../python3-powerapi_$VERSION-1_all.deb ~/deb/
       - name: Cache debian package
         env:
           VERSION: ${{needs.check_release.outputs.version}}
         uses: actions/cache@v2
         with:
-          path: ~/python3-powerapi_$VERSION-1_all.deb
+          path: ~/deb
           key: python3-powerapi_$VERSION-1_all.deb
 
   publish_release:
@@ -195,7 +196,7 @@ jobs:
           VERSION: ${{needs.check_release.outputs.version}}
         uses: actions/cache@v2
         with:
-          path: ~/python3-powerapi_$VERSION-1_all.deb
+          path: ~/deb
           key: python3-powerapi_$VERSION-1_all.deb
       - name: Create Changelog
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
@@ -208,5 +209,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -F ~/changelog.md ~/python3-powerapi_$VERSION-1_all.deb python3-thespian_3.10.0-1_all.deb
+        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -F ~/changelog.md ~/deb/*
 
