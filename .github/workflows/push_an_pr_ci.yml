@@ -31,7 +31,7 @@ jobs:
         run: |
           sed -i 's/python_requires = >= 3\.[0-9]/python_requires = >= 3.6/g' setup.cfg # use python 3.6 in setup.cfgsed -i 's/python_requires = >= 3\.[0-9]/python_requires = >= 3.6/g' setup.cfg # use python 3.6 in setup.cfg
           sed -i 's/from __future__ import annotations//g' $(find powerapi/ -name "*.py" | grep -v tree) # remove import annotations
-          sed -ri 's/.* = NewType.*//g' $(find powerapi/ -name "*.py" | grep -v tree) # remove NewType creation
+          sed -ri 's/= NewType.*/= None/g' $(find powerapi/ -name "*.py" | grep -v tree) # remove NewType creation
           sed -i 's/: *[[:alnum:]]* *=/=/g' $(find powerapi/ -name "*.py" | grep -v tree) # remove variable type annotations
           sed -ri 's/: Callable\[\[([a-zA-Z]*, )*[a-zA-Z]*\], [a-zA-Z]*\]//g' $(find powerapi/ -name "*.py" | grep -v tree) # remove Callable type annotations
           sed -i 's/ *-> *[[:alnum:]]*:/:/g' $(find powerapi/ -name "*.py" | grep -v tree) # remove return type
