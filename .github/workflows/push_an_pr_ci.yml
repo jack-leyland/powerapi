@@ -26,7 +26,7 @@ jobs:
           sudo apt update
           sudo apt install -y libvirt-dev procps
       - uses: actions/checkout@v2
-      - name: Remove Type hints
+      - name: Convert to python3.6 code
         if: ${{ matrix.python-version == 3.6 }}
         run: |
           sed -i 's/python_requires = >= 3\.[0-9]/python_requires = >= 3.6/g' setup.cfg # use python 3.6 in setup.cfgsed -i 's/python_requires = >= 3\.[0-9]/python_requires = >= 3.6/g' setup.cfg # use python 3.6 in setup.cfg
