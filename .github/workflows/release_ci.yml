@@ -1,8 +1,9 @@
 name: Release workflow
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 env:
   repository: https://github.com/powerapi-ng/powerapi
 jobs:
@@ -171,11 +172,19 @@ jobs:
       - name: Build binary package and upload it github release page
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{needs.check_release.outputs.version}}
         run: |
-          VERSION=${{needs.check_release.outputs.version}}
+
           PYTHON_VERSION=$(echo ${{ matrix.python-version }} | sed -e 's/\.//g')
           cd ./deb_dist/powerapi-$VERSION
           DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage
           cd ..
           mv python3-powerapi_$VERSION-1_all.deb python$PYTHON_VERSION-powerapi_$VERSION-1_all.deb
           gh release upload v$VERSION python$PYTHON_VERSION-powerapi_$VERSION-1_all.deb
+      - name: upload thespian package to github release page
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{needs.check_release.outputs.version}}
+        run: |
+          wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
+          gh release upload v$VERSION python3-thespian_3.10.0-1_all.deb
