@@ -199,15 +199,15 @@ jobs:
           path: ~/deb
           key: python3-powerapi_$VERSION-1_all.deb
       - name: Create Changelog
+        id: changelog-generator
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          output: ~/changelog.md
       - name: Download thespian debian package
         run: wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -F ~/changelog.md ~/deb/*
+        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -n ${{ steps.changelog-generator.outputs.changelog }} ~/deb/*
 
