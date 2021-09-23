@@ -209,5 +209,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -n ${{ steps.changelog-generator.outputs.changelog }} ~/deb/*
-
+        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -n "${{ steps.changelog-generator.outputs.changelog }}" ~/deb/*
