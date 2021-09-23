@@ -31,11 +31,11 @@ from __future__ import annotations
 
 
 from datetime import datetime
-from typing import Dict, List, Tuple, NewType
+from typing import Dict
 
-from powerapi.report.report import Report, BadInputData, CSV_HEADER_COMMON
+from powerapi.report.report import Report, BadInputData, CSV_HEADER_COMMON, CsvLines
 
-CsvLines = NewType('CsvLines', Tuple[List[str], Dict[str, str]])
+
 CSV_HEADER_PROCFS = CSV_HEADER_COMMON + ['socket', 'cpu']
 
 
