@@ -176,13 +176,11 @@ jobs:
           DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage
           mkdir -p ~/deb
           cp ../python3-powerapi_$VERSION-1_all.deb ~/deb/
-      - name: Cache debian package
-        env:
-          VERSION: ${{needs.check_release.outputs.version}}
-        uses: actions/cache@v2
+          ls ~/deb/
+      - uses: actions/upload-artifact@v2
         with:
-          path: ~/deb
-          key: python3-powerapi_$VERSION-1_all.deb
+          name: deb_package
+          path: ~/deb/
 
   publish_release:
     name: Publish the release on github
@@ -190,13 +188,10 @@ jobs:
     needs: [check_release, build_deb_package]
     steps:
       - uses: actions/checkout@v2
-      - name: Cache debian package
-        env:
-          VERSION: ${{needs.check_release.outputs.version}}
-        uses: actions/cache@v2
+      - uses: actions/download-artifact@v2
         with:
+          name: deb_package
           path: ~/deb
-          key: python3-powerapi_$VERSION-1_all.deb
       - name: Create Changelog
         id: changelog-generator
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
