@@ -202,6 +202,9 @@ jobs:
       - name: Create Changelog
         run: |
           grep -v "^# \[\]" ~/pre-changelog.md | sed 's/^#//g' > ~/final-changelog.md
+          cat ~/pre-changelog.md
+          echo "=================="
+          cat ~/final-changelog.md
           cat ~/final-changelog.md >> CHANGELOG.md
       - name: Download thespian debian package
         run: |
