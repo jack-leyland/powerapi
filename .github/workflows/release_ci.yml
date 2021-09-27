@@ -211,4 +211,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: gh release create $VERSION -d -t $VERSION -n "$(echo cat ~/final-changelog.md)" ~/deb/*
+        run: gh release create $VERSION -d -t $VERSION -F ~/final-changelog.md ~/deb/*
