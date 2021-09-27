@@ -206,7 +206,7 @@ jobs:
         run: |
           echo $CHANGELOG_CONTENT | grep -v "^# \[\]" | sed 's/^#//g' > ~/final-changelog.md
           echo $CHANGELOG_CONTENT
-          echo "=================="
+          echo "==================="
           cat ~/final-changelog.md
           cat ~/final-changelog.md >> CHANGELOG.md
       - name: Download thespian debian package
