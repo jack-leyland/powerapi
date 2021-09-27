@@ -192,11 +192,17 @@ jobs:
         with:
           name: deb_package
           path: ~/deb
-      - name: Create Changelog
-        id: changelog-generator
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      - name: Create pre-changelog
+        uses: TriPSs/conventional-changelog-action@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.github_token }}
+          preset: angular
+          output-file: ~/pre-changelog.md
+          release-count: 2
+      - name: Create Changelog
+        run: |
+          grep -v "^# \[\]" ~/pre-changelog.md | sed 's/^#//g' > ~/final-changelog.md
+          cat ~/final-changelog.md >> CHANGELOG.md
       - name: Download thespian debian package
         run: |
           wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
@@ -205,4 +211,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: gh release create $VERSION -d -t $VERSION -n "${{ steps.changelog-generator.outputs.changelog }}" ~/deb/*
+        run: gh release create $VERSION -d -t $VERSION -n "$(echo cat ~/final-changelog.md)" ~/deb/*
