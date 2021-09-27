@@ -1,4 +1,4 @@
-name: Push and PR workflow
+name: Push/PR workflow
 
 on:
   push:

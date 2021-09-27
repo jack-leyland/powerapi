@@ -13,15 +13,15 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9]
-    services:
-      mongo:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-      influx:
-        image: influxdb:1.8
-        ports:
-          - 8086:8086
+    # services:
+    #   mongo:
+    #     image: mongo:latest
+    #     ports:
+    #       - 27017:27017
+    #   influx:
+    #     image: influxdb:1.8
+    #     ports:
+    #       - 8086:8086
     steps:
       - name: Install tools
         run: |
@@ -183,7 +183,7 @@ jobs:
           path: ~/deb/
 
   publish_release:
-    name: Publish the release on github
+    name: Publish release on github
     runs-on: ubuntu-latest
     needs: [check_release, build_deb_package]
     steps:
@@ -198,9 +198,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Download thespian debian package
-        run: wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
+        run: |
+          wget https://github.com/powerapi-ng/powerapi-ci-env/raw/main/python3-thespian_3.10.0-1_all.deb
+          cp python3-thespian_3.10.0-1_all.deb ~/deb
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{needs.check_release.outputs.version}}
-        run: gh release create $GITHUB_REF -d -t $GITHUB_REF -n "${{ steps.changelog-generator.outputs.changelog }}" ~/deb/*
+        run: gh release create $VERSION -d -t $VERSION -n "${{ steps.changelog-generator.outputs.changelog }}" ~/deb/*
