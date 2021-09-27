@@ -206,8 +206,8 @@ jobs:
         env:
           CHANGELOG_CONTENT: ${{ steps.changelog.outputs.clean_changelog }}
         run: |
-          apt install npm
-          npm install -g conventional-changelog-cli
+          sudo apt install -y npm
+          sudo npm install -g conventional-changelog-cli
           conventional-changelog -p angular -r 2 | grep -v "^# \[\]" | sed 's/^#//g' > ~/final-changelog.md
           cat ~/final-changelog.md
           cat ~/final-changelog.md >> CHANGELOG.md
