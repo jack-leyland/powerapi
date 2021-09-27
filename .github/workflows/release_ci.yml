@@ -193,6 +193,7 @@ jobs:
           name: deb_package
           path: ~/deb
       - name: Create pre-changelog
+        id: pre-changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.github_token }}
@@ -200,9 +201,11 @@ jobs:
           output-file: ~/pre-changelog.md
           release-count: 2
       - name: Create Changelog
+        env:
+          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.clean_changelog }}
         run: |
-          grep -v "^# \[\]" ~/pre-changelog.md | sed 's/^#//g' > ~/final-changelog.md
-          cat ~/pre-changelog.md
+          echo $CHANGELOG_CONTENT | grep -v "^# \[\]" | sed 's/^#//g' > ~/final-changelog.md
+          echo $CHANGELOG_CONTENT
           echo "=================="
           cat ~/final-changelog.md
           cat ~/final-changelog.md >> CHANGELOG.md
