@@ -66,7 +66,7 @@ class PowerReport(Report):
         :return: The HWPC report initialized with the given data
         """
         try:
-            ts = Report._extract_timestamp(data['timestamp'])
+            ts = Report._extract_timestamp(data['timestamp'], False)
             metadata = {} if 'metadata' not in data else data['metadata']
             return PowerReport(ts, data['sensor'], data['target'], data['power'], metadata)
         except KeyError as exn:

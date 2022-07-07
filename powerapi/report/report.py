@@ -90,7 +90,9 @@ class Report(Message):
         return report.__dict__
 
     @staticmethod
-    def _extract_timestamp(ts):
+    def _extract_timestamp(ts, enforceFormat=True):
+        # Additional guard to accomodate uint64 monotonic timestamps used in nodewatts
+        if not enforceFormat: return ts
         if isinstance(ts, str):
             try:
                 return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%f")
